@@ -1,8 +1,11 @@
 const express = require('express');
+const axios = require('axios');
 let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
+
+const BASE_URL = "http://localhost:5000";
 
 // Task 6: Register a new user
 public_users.post("/register", (req,res) => {
@@ -83,4 +86,52 @@ public_users.get('/review/:isbn',function (req, res) {
   return res.status(404).json({message: "Book not found"});
 });
 
+// ---------------------------------------------------------------
+// Tasks 10-13: Same lookups using async-await with Axios
+// ---------------------------------------------------------------
+
+// Task 10: Get the list of all books using async-await with Axios
+const getAllBooks = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/`);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error fetching book list: ${error.message}`);
+  }
+};
+
+// Task 11: Get book details based on ISBN using async-await with Axios
+const getBookByISBN = async (isbn) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/isbn/${isbn}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error fetching book with ISBN ${isbn}: ${error.message}`);
+  }
+};
+
+// Task 12: Get book details based on author using async-await with Axios
+const getBooksByAuthor = async (author) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/author/${encodeURIComponent(author)}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error fetching books by author ${author}: ${error.message}`);
+  }
+};
+
+// Task 13: Get book details based on title using async-await with Axios
+const getBooksByTitle = async (title) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/title/${encodeURIComponent(title)}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error fetching books with title ${title}: ${error.message}`);
+  }
+};
+
 module.exports.general = public_users;
+module.exports.getAllBooks = getAllBooks;
+module.exports.getBookByISBN = getBookByISBN;
+module.exports.getBooksByAuthor = getBooksByAuthor;
+module.exports.getBooksByTitle = getBooksByTitle;
